@@ -1,16 +1,13 @@
 import pymongo
 import program_1 as p1
-
-db_name = "vls"
-db_user = "dbuser"
-db_password = "xxx"
+import database_info as dbi
 
 
 def refresh(city):
     print("Refreshing VLS from " + city + " ...")
     client = pymongo.MongoClient(
-        "mongodb+srv://" + db_user + ":" + db_password +
-        "@cluster0.yxfmb.gcp.mongodb.net/" + db_name + "?retryWrites=true&w=majority")
+        "mongodb+srv://" + dbi.db_user + ":" + dbi.db_password +
+        "@cluster0.yxfmb.gcp.mongodb.net/" + dbi.db_name + "?retryWrites=true&w=majority")
 
     db = client.vls
     refresh_stations = p1.get_stations(city)
