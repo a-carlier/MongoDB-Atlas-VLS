@@ -14,7 +14,8 @@ def refresh(city):
 
     for sta in refresh_stations:
         db.stations.update_one({
-            "name": sta["name"]
+            "name": sta["name"],
+            "timestamp": sta["timestamp"]
         }, {
             "$set": sta
         }, upsert=True)  # Add the data if not found

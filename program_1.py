@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 """
 Objectif: Récuperer les donnees suivantes des APIS de Velib de Lille, Paris, Lyon et Rennes
@@ -46,6 +47,8 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             element['fields']['available'] = True if element['fields']['etat'] == 'EN SERVICE' else False
             element['fields'].pop('etat', None)
 
+            element['fields']['timestamp'] = time.time()
+
             stations.append(element['fields'])
 
     if "paris" in cities:
@@ -75,6 +78,8 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             element['fields'].pop('is_renting', None)
             element['fields']['available'] = True if element['fields']['is_installed'] == 'OUI' else False
             element['fields'].pop('is_installed', None)
+
+            element['fields']['timestamp'] = time.time()
 
             stations.append(element['fields'])
 
@@ -123,9 +128,11 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             # element['fields']['name'] = element['fields']['nom']
             # element['fields'].pop('nom', None)
             element['tpe'] = element['banking']
-            element['fields'].pop('banking', None)
-            element['available'] = True if element['availability_code'] == 1 else False
-            element['fields'].pop('availability_code', None)
+            element.pop('banking', None)
+            element['available'] = True if element['availabilitycode'] == 1 else False
+            element.pop('availabilitycode', None)
+
+            element['timestamp'] = time.time()
 
             stations.append(element)
 
@@ -147,10 +154,10 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             element['fields'].pop('d_mes', None)
             element['fields'].pop('y_cc48', None)
             element['fields'].pop('vls_id', None)
+            element['fields'].pop('geo_point_2d', None)
             element['fields'].pop('geo_shape', None)
 
-            element['fields']['geolocation'] = element['fields']['geo_point_2d']
-            element['fields'].pop('geo_point_2d', None)
+            element['fields']['geometry'] = element['geometry']
             element['fields']['size'] = element['fields']['nb_socles']
             element['fields'].pop('nb_socles', None)
             element['fields']['name'] = element['fields']['nom']
@@ -159,6 +166,8 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             # element['fields'].pop('type', None)
             element['fields']['available'] = True if element['fields']['etat'] == 'Ouverte' else False
             element['fields'].pop('etat', None)
+
+            element['fields']['timestamp'] = time.time()
 
             stations.append(element['fields'])
 

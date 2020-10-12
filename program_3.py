@@ -10,11 +10,18 @@ def get_near_stations(x, y, distance):  # Distance in meters
 
     db = client.vls
     cursor = db.stations.find(
-        {"geolocation": {
-            "$near": [x, y],
-            "$minDistance": 0,
-            "$maxDistance": distance
-        }}
+        {
+            "geometry": {
+                "$near": {
+                "$geometry": {
+                    "type": "Point",
+                    "coordinates": [x, y]
+                },
+                "$minDistance": 0,
+                "$maxDistance": distance
+                }
+            }
+        }
     )
 
     results = []
@@ -23,4 +30,4 @@ def get_near_stations(x, y, distance):  # Distance in meters
     return results
 
 if __name__ == "__main__":
-    print(get_near_stations(50.63126, 3.06119, 0.001))  # Radians
+    print(get_near_stations(3.06119, 50.63126, 100))  # Metres
