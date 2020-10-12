@@ -33,9 +33,9 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             element['fields'].pop('datemiseajour', None)
             element['fields'].pop('localisation', None)
             element['fields'].pop('adresse', None)
-
-            element['fields']['geolocation'] = element['fields']['geo']
             element['fields'].pop('geo', None)
+
+            element['fields']['geometry'] = element['geometry']
             element['fields']['size'] = element['fields']['nbvelosdispo'] + element['fields']['nbplacesdispo']
             element['fields'].pop('nbplacesdispo', None)
             element['fields'].pop('nbvelosdispo', None)
@@ -64,9 +64,9 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             element['fields'].pop('numdocksavailable', None)
             element['fields'].pop('duedate', None)
             element['fields'].pop('is_returning', None)
-
-            element['fields']['geolocation'] = element['fields']['coordonnees_geo']
             element['fields'].pop('coordonnees_geo', None)
+
+            element['fields']['geometry'] = element['geometry']
             element['fields']['size'] = element['fields']['capacity']
             element['fields'].pop('capacity', None)
             # element['fields']['name'] = element['fields']['name']
@@ -79,25 +79,53 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
             stations.append(element['fields'])
 
     if "lyon" in cities:
-        url = "https://transport.data.gouv.fr/gbfs/lyon/station_information.json"
+        url = "https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json?maxfeatures=500&start=1"
         response = requests.request("GET", url)
         response_json = json.loads(response.text.encode('utf8'))
 
-        records = response_json.get("data", {})["stations"]
+        records = response_json.get("values", [])
 
         for element in records:
-            element.pop('station_id', None)
+            element.pop('number', None)
+            element.pop('pole', None)
+            element.pop('available_bikes', None)
+            element.pop('code_insee', None)
+            element.pop('availability', None)
+            element.pop('etat', None)
+            element.pop('startdate', None)
+            element.pop('langue', None)
+            element.pop('last_update', None)
+            element.pop('available_bike_stands', None)
+            element.pop('gid', None)
+            element.pop('titre', None)
+            element.pop('status', None)
+            element.pop('commune', None)
+            element.pop('description', None)
+            element.pop('nature', None)
+            element.pop('bonus', None)
+            element.pop('address2', None)
             element.pop('address', None)
+            element.pop('last_update_fme', None)
+            element.pop('enddate', None)
+            element.pop('nmarrond', None)
 
-            element['geolocation'] = [element['lat'], element['lon']]
+            element['geometry'] = {
+                "type": "Point",
+                "coordinates": [
+                    element['lng'],
+                    element['lat']
+                ]
+            }
             element.pop('lat', None)
-            element.pop('lon', None)
-            element['size'] = element['capacity']
-            element.pop('capacity', None)
+            element.pop('lng', None)
+            element['size'] = element['bike_stands']
+            element.pop('bike_stands', None)
             # element['fields']['name'] = element['fields']['nom']
             # element['fields'].pop('nom', None)
-            element['tpe'] = False # Unknown
-            element['available'] = False # Unknown
+            element['tpe'] = element['banking']
+            element['fields'].pop('banking', None)
+            element['available'] = True if element['availability_code'] == 1 else False
+            element['fields'].pop('availability_code', None)
 
             stations.append(element)
 
