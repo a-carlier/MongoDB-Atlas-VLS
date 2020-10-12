@@ -26,3 +26,12 @@ if __name__ == "__main__":
     refresh("paris")
     refresh("lyon")
     refresh("rennes")
+
+    """
+    while True:
+        time.sleep(60 * 1000)
+        refresh("lille")
+        refresh("paris")
+        refresh("lyon")
+        refresh("rennes")
+    """

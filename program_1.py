@@ -28,28 +28,16 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
         
         for element in records:
-            element['fields'].pop('etatconnexion', None)
-            element['fields'].pop('commune', None)
-            element['fields'].pop('libelle', None)
-            element['fields'].pop('datemiseajour', None)
-            element['fields'].pop('localisation', None)
-            element['fields'].pop('adresse', None)
-            element['fields'].pop('geo', None)
+            new_el = {
+                'geometry': element['geometry'],
+                'size': element['fields']['nbvelosdispo'] + element['fields']['nbplacesdispo'],
+                'name': element['fields']['nom'],
+                'tpe': True if element['fields']['type'] == 'AVEC TPE' else False,
+                'available': True if element['fields']['etat'] == 'EN SERVICE' else False,
+                'timestamp': time.time()
+            }
 
-            element['fields']['geometry'] = element['geometry']
-            element['fields']['size'] = element['fields']['nbvelosdispo'] + element['fields']['nbplacesdispo']
-            element['fields'].pop('nbplacesdispo', None)
-            element['fields'].pop('nbvelosdispo', None)
-            element['fields']['name'] = element['fields']['nom']
-            element['fields'].pop('nom', None)
-            element['fields']['tpe'] = True if element['fields']['type'] == 'AVEC TPE' else False
-            element['fields'].pop('type', None)
-            element['fields']['available'] = True if element['fields']['etat'] == 'EN SERVICE' else False
-            element['fields'].pop('etat', None)
-
-            element['fields']['timestamp'] = time.time()
-
-            stations.append(element['fields'])
+            stations.append(new_el)
 
     if "paris" in cities:
         url = "https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&q=&rows=1500"
@@ -59,29 +47,16 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
 
         for element in records:
-            element['fields'].pop('ebike', None)
-            element['fields'].pop('nom_arrondissement_communes', None)
-            element['fields'].pop('numbikesavailable', None)
-            element['fields'].pop('mechanical', None)
-            element['fields'].pop('stationcode', None)
-            element['fields'].pop('numdocksavailable', None)
-            element['fields'].pop('duedate', None)
-            element['fields'].pop('is_returning', None)
-            element['fields'].pop('coordonnees_geo', None)
+            new_el = {
+                'geometry': element['geometry'],
+                'size': element['fields']['capacity'],
+                'name': element['fields']['name'],
+                'tpe': True if element['fields']['is_renting'] == 'OUI' else False,
+                'available': True if element['fields']['is_installed'] == 'OUI' else False,
+                'timestamp': time.time()
+            }
 
-            element['fields']['geometry'] = element['geometry']
-            element['fields']['size'] = element['fields']['capacity']
-            element['fields'].pop('capacity', None)
-            # element['fields']['name'] = element['fields']['name']
-            # element['fields'].pop('name', None)
-            element['fields']['tpe'] = True if element['fields']['is_renting'] == 'OUI' else False
-            element['fields'].pop('is_renting', None)
-            element['fields']['available'] = True if element['fields']['is_installed'] == 'OUI' else False
-            element['fields'].pop('is_installed', None)
-
-            element['fields']['timestamp'] = time.time()
-
-            stations.append(element['fields'])
+            stations.append(new_el)
 
     if "lyon" in cities:
         url = "https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json?maxfeatures=500&start=1"
@@ -91,50 +66,22 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("values", [])
 
         for element in records:
-            element.pop('number', None)
-            element.pop('pole', None)
-            element.pop('available_bikes', None)
-            element.pop('code_insee', None)
-            element.pop('availability', None)
-            element.pop('etat', None)
-            element.pop('startdate', None)
-            element.pop('langue', None)
-            element.pop('last_update', None)
-            element.pop('available_bike_stands', None)
-            element.pop('gid', None)
-            element.pop('titre', None)
-            element.pop('status', None)
-            element.pop('commune', None)
-            element.pop('description', None)
-            element.pop('nature', None)
-            element.pop('bonus', None)
-            element.pop('address2', None)
-            element.pop('address', None)
-            element.pop('last_update_fme', None)
-            element.pop('enddate', None)
-            element.pop('nmarrond', None)
-
-            element['geometry'] = {
-                "type": "Point",
-                "coordinates": [
-                    element['lng'],
-                    element['lat']
-                ]
+            new_el = {
+                'geometry': {
+                    "type": "Point",
+                    "coordinates": [
+                        element['lng'],
+                        element['lat']
+                    ]
+                },
+                'size': element['bike_stands'],
+                'name': element['name'],
+                'tpe': element['banking'],
+                'available': True if element['availabilitycode'] == 1 else False,
+                'timestamp': time.time()
             }
-            element.pop('lat', None)
-            element.pop('lng', None)
-            element['size'] = element['bike_stands']
-            element.pop('bike_stands', None)
-            # element['fields']['name'] = element['fields']['nom']
-            # element['fields'].pop('nom', None)
-            element['tpe'] = element['banking']
-            element.pop('banking', None)
-            element['available'] = True if element['availabilitycode'] == 1 else False
-            element.pop('availabilitycode', None)
 
-            element['timestamp'] = time.time()
-
-            stations.append(element)
+            stations.append(new_el)
 
     if "rennes" in cities:
         # At writing time, there is 99 stations, 100 rows will be sufficent
@@ -145,31 +92,16 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
 
         for element in records:
-            element['fields'].pop('x_cc48', None)
-            element['fields'].pop('metro', None)
-            element['fields'].pop('objectid', None)
-            element['fields'].pop('d_mhs', None)
-            element['fields'].pop('code_exploitation', None)
-            element['fields'].pop('adresse', None)
-            element['fields'].pop('d_mes', None)
-            element['fields'].pop('y_cc48', None)
-            element['fields'].pop('vls_id', None)
-            element['fields'].pop('geo_point_2d', None)
-            element['fields'].pop('geo_shape', None)
+            new_el = {
+                'geometry': element['geometry'],
+                'size': element['fields']['nb_socles'],
+                'name': element['fields']['nom'],
+                'tpe': True if element['fields']['tpe'] == 'oui' else False,
+                'available': True if element['fields']['etat'] == 'Ouverte' else False,
+                'timestamp': time.time()
+            }
 
-            element['fields']['geometry'] = element['geometry']
-            element['fields']['size'] = element['fields']['nb_socles']
-            element['fields'].pop('nb_socles', None)
-            element['fields']['name'] = element['fields']['nom']
-            element['fields'].pop('nom', None)
-            element['fields']['tpe'] = True if element['fields']['tpe'] == 'oui' else False
-            # element['fields'].pop('type', None)
-            element['fields']['available'] = True if element['fields']['etat'] == 'Ouverte' else False
-            element['fields'].pop('etat', None)
-
-            element['fields']['timestamp'] = time.time()
-
-            stations.append(element['fields'])
+            stations.append(new_el)
 
     return stations
 
