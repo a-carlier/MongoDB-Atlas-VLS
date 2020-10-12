@@ -15,7 +15,7 @@ de valeurs et memes cles
 
 """
 
-def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
+def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
 
     stations = []
 
@@ -28,13 +28,21 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
         
         for element in records:
+
+            if live_data:
+                element['fields']['timestamp'] = time.time()
+                element['fields']['aggregationid'] = 59000000 + element['fields']['libelle']  # 59000000 for Lille
+                stations.append(element['fields'])
+
+                continue
+
             new_el = {
                 'geometry': element['geometry'],
                 'size': element['fields']['nbvelosdispo'] + element['fields']['nbplacesdispo'],
                 'name': element['fields']['nom'],
                 'tpe': True if element['fields']['type'] == 'AVEC TPE' else False,
                 'available': True if element['fields']['etat'] == 'EN SERVICE' else False,
-                'timestamp': time.time()
+                'aggregationid': 59000000 + element['fields']['libelle']
             }
 
             stations.append(new_el)
@@ -47,13 +55,20 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
 
         for element in records:
+
+            if live_data:
+                element['fields']['timestamp'] = time.time()
+                element['fields']['aggregationid'] = 75000000 + int(element['fields']['stationcode'])  # 75000000 for Lille
+                stations.append(element['fields'])
+                continue
+
             new_el = {
                 'geometry': element['geometry'],
                 'size': element['fields']['capacity'],
                 'name': element['fields']['name'],
                 'tpe': True if element['fields']['is_renting'] == 'OUI' else False,
                 'available': True if element['fields']['is_installed'] == 'OUI' else False,
-                'timestamp': time.time()
+                'aggregationid': 75000000 + int(element['fields']['stationcode'])
             }
 
             stations.append(new_el)
@@ -66,6 +81,13 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("values", [])
 
         for element in records:
+
+            if live_data:
+                element['timestamp'] = time.time()
+                element['aggregationid'] = 69000000 + element['number']  # 69000000 for Lyon
+                stations.append(element)
+                continue
+
             new_el = {
                 'geometry': {
                     "type": "Point",
@@ -78,7 +100,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
                 'name': element['name'],
                 'tpe': element['banking'],
                 'available': True if element['availabilitycode'] == 1 else False,
-                'timestamp': time.time()
+                'aggregationid': 69000000 + element['number']
             }
 
             stations.append(new_el)
@@ -92,13 +114,20 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"]):
         records = response_json.get("records", [])
 
         for element in records:
+
+            if live_data:
+                element['fields']['timestamp'] = time.time()
+                element['fields']['aggregationid'] = 35000000 + element['fields']['objectid']  # 35000000 for Rennes
+                stations.append(element['fields'])
+                continue
+
             new_el = {
                 'geometry': element['geometry'],
                 'size': element['fields']['nb_socles'],
                 'name': element['fields']['nom'],
                 'tpe': True if element['fields']['tpe'] == 'oui' else False,
                 'available': True if element['fields']['etat'] == 'Ouverte' else False,
-                'timestamp': time.time()
+                'aggregationid': 35000000 + element['fields']['objectid']  # 35000000 for Rennes
             }
 
             stations.append(new_el)
