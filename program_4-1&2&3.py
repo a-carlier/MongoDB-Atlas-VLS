@@ -8,6 +8,7 @@ import database_info as dbi
 # - update a stations
 
 def find_station_name(name):  #Find on LILLE
+    # STATION REGEX FINDING
     client = pymongo.MongoClient(
         "mongodb+srv://" + dbi.db_user + ":" + dbi.db_password +
         "@cluster0.yxfmb.gcp.mongodb.net/" + dbi.db_name + "?retryWrites=true&w=majority")
@@ -115,6 +116,7 @@ def value_update(stationu):
 
 
 def which_update(results):
+    # INTERFACE UPDATING STATION
     print("Please prompt which station you want to update by entering its ID: ")
     idu = input("ID to update: ")
 
@@ -160,6 +162,21 @@ def which_update(results):
         # Else, continue...
 
 
+def delete_station(station):
+    # DELETE STATION FROM DATABASE AND HISTORY
+    client = pymongo.MongoClient(
+        "mongodb+srv://" + dbi.db_user + ":" + dbi.db_password +
+        "@cluster0.yxfmb.gcp.mongodb.net/" + dbi.db_name + "?retryWrites=true&w=majority")
+
+    stations = client.vls.stations
+    my_station = stations.find_one_and_delete({'aggregationid': station["aggregationid"]})
+
+    if (my_station):  # Check Deleted
+        client.vls.history.delete_many({'aggregationid': station["aggregationid"]})
+
+    print("Station and associated History deleted")
+
+
 def main():
     print("Please prompt a name value to search in the database: ")
     name = input("Name prompt: ")
@@ -175,7 +192,20 @@ def main():
         print("No stations Found")
         return 0
 
-    which_update(results)
+    print("Do you want to UPDATE or DELETE this station?")
+    valin = input("(UPDATE/DELETE): ")
+
+    while True:
+        if valin != "UPDATE" and valin != "DELETE":
+            print("Prompt incorrect, please try again: ")
+            valin = input("(UPDATE/DELETE): ")
+            continue
+        break  # Else
+
+    if valin == "UPDATE":
+        which_update(results)
+    elif valin == "DELETE":
+        delete_station(results)
 
 
 if __name__ == "__main__":
