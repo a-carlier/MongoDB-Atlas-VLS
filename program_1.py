@@ -36,8 +36,10 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
 
                 continue
 
+            # ELSE
+
             new_el = {
-                'geometry': element['geometry'],
+                'geolocalisation': element['geometry'],
                 'size': element['fields']['nbvelosdispo'] + element['fields']['nbplacesdispo'],
                 'name': element['fields']['nom'],
                 'tpe': True if element['fields']['type'] == 'AVEC TPE' else False,
@@ -63,7 +65,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
                 continue
 
             new_el = {
-                'geometry': element['geometry'],
+                'geolocalisation': element['geometry'],
                 'size': element['fields']['capacity'],
                 'name': element['fields']['name'],
                 'tpe': True if element['fields']['is_renting'] == 'OUI' else False,
@@ -89,7 +91,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
                 continue
 
             new_el = {
-                'geometry': {
+                'geolocalisation': {
                     "type": "Point",
                     "coordinates": [
                         element['lng'],
@@ -122,7 +124,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
                 continue
 
             new_el = {
-                'geometry': element['geometry'],
+                'geolocalisation': element['geometry'],
                 'size': element['fields']['nb_socles'],
                 'name': element['fields']['nom'],
                 'tpe': True if element['fields']['tpe'] == 'oui' else False,

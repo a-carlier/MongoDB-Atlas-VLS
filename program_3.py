@@ -11,7 +11,7 @@ def get_near_stations(x, y, distance):  # Distance in meters
     db = client.vls
     cursor = db.stations.find(
         {
-            "geometry": {
+            "geolocalisation": {
                 "$near": {
                 "$geometry": {
                     "type": "Point",
