@@ -3,7 +3,7 @@ import time
 import program_1 as p1
 import database_info as dbi
 
-worker = False  # Activate to make a worker out of the program
+worker = True  # Activate to make a worker out of the program
 refresh_seconds = 60 * 2  # Refreshing Time in seconds
 
 
@@ -18,10 +18,13 @@ def init_static_stations(city):
 
     for sta in init_stations:
         db.stations.update_one({
-            "name": sta["name"]
+            "aggregationid": sta["aggregationid"]
         }, {
             "$set": sta
         }, upsert=True)  # Add the data if not found
+
+    db.stations.create_index([("geolocalisation", "2dsphere")])
+    db.stations.create_index([("aggregationid", 1)])
 
 
 def refresh(city):
@@ -39,19 +42,19 @@ def refresh(city):
 
 if __name__ == "__main__":
     init_static_stations("lille")
-    init_static_stations("paris")
-    init_static_stations("lyon")
-    init_static_stations("rennes")
+    # init_static_stations("paris")
+    # init_static_stations("lyon")
+    # init_static_stations("rennes")
 
     refresh("lille")
-    refresh("paris")
-    refresh("lyon")
-    refresh("rennes")
+    # refresh("paris")
+    # refresh("lyon")
+    # refresh("rennes")
 
     while True and worker:
         time.sleep(refresh_seconds)
         refresh("lille")
-        refresh("paris")
-        refresh("lyon")
-        refresh("rennes")
+        # refresh("paris")
+        # refresh("lyon")
+        # refresh("rennes")
 
