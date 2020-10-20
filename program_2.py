@@ -17,6 +17,8 @@ def init_static_stations(city):
     init_stations = p1.get_stations([city])
 
     for sta in init_stations:
+        # It's important not using update Many, because we don't want to overwrite everything, some stations are
+        # updated, some are added
         db.stations.update_one({
             "aggregationid": sta["aggregationid"]
         }, {

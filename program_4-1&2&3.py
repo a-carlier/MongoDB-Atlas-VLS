@@ -5,9 +5,10 @@ import database_info as dbi
 # PROGRAM OBJECTIVES:
 # - find station with name (with some letters)
 #   * Find a station with a word(s) case insensitive
-# - update a stations
+# - update a station
+# - delete a station
 
-def find_station_name(name):  #Find on LILLE
+def find_station_name(name):
     # STATION REGEX FINDING
     client = pymongo.MongoClient(
         "mongodb+srv://" + dbi.db_user + ":" + dbi.db_password +
@@ -27,6 +28,7 @@ def find_station_name(name):  #Find on LILLE
 
 
 def value_update(stationu):
+    # UPDATING INTERFACE (Not sending to database)
     print("Which value do you want to change from station " + stationu["name"] + "?")
     print("- name: " + str(stationu["name"]))
     print("- size: " + str(stationu["size"]))
@@ -115,8 +117,8 @@ def value_update(stationu):
     return stationu
 
 
-def which_update(results):
-    # INTERFACE UPDATING STATION
+def which_station(results):
+    # INTERFACE CHOOSING STATION AND UPDATING OR DELETING THIS STATION
     print("Please prompt which station you want to update by entering its ID: ")
     idu = input("ID to update: ")
 
@@ -138,28 +140,41 @@ def which_update(results):
 
     db = client.vls
 
+    print("Do you want to UPDATE or DELETE this station?")
+    valin = input("(UPDATE/DELETE): ")
+
     while True:
-        stationu = value_update(stationu)
+        if valin != "UPDATE" and valin != "DELETE":
+            print("Prompt incorrect, please try again: ")
+            valin = input("(UPDATE/DELETE): ")
+            continue
+        break  # Else
 
-        print("Updating Database...")
-        db.stations.update_one({
-            "aggregationid": stationu["aggregationid"]
-        }, {
-            "$set": stationu
-        }, upsert=True)  # Add the data if not found
-
-        print("Would you like to change another value?")
-        valin = input("(Y/N): ")
-
+    if valin == "DELETE":
+        delete_station(stationu)
+    elif valin == "UPDATE":
         while True:
-            if valin != "Y" and valin != "N":
-                valin = input("(Y/N): ")
-                continue
-            break  # Else
+            stationu = value_update(stationu)
 
-        if valin == "N":
-            break
-        # Else, continue...
+            print("Updating Database...")
+            db.stations.update_one({
+                "aggregationid": stationu["aggregationid"]
+            }, {
+                "$set": stationu
+            }, upsert=True)  # Add the data if not found
+
+            print("Would you like to change another value?")
+            valin = input("(Y/N): ")
+
+            while True:
+                if valin != "Y" and valin != "N":
+                    valin = input("(Y/N): ")
+                    continue
+                break  # Else
+
+            if valin == "N":
+                break
+            # Else, continue...
 
 
 def delete_station(station):
@@ -192,20 +207,7 @@ def main():
         print("No stations Found")
         return 0
 
-    print("Do you want to UPDATE or DELETE this station?")
-    valin = input("(UPDATE/DELETE): ")
-
-    while True:
-        if valin != "UPDATE" and valin != "DELETE":
-            print("Prompt incorrect, please try again: ")
-            valin = input("(UPDATE/DELETE): ")
-            continue
-        break  # Else
-
-    if valin == "UPDATE":
-        which_update(results)
-    elif valin == "DELETE":
-        delete_station(results)
+    which_station(results)
 
 
 if __name__ == "__main__":
