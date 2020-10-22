@@ -1,6 +1,6 @@
 import requests
 import json
-import time
+import datetime
 
 """
 Objectif: Récuperer les donnees suivantes des APIS de Velib de Lille, Paris, Lyon et Rennes
@@ -30,7 +30,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
         for element in records:
 
             if live_data:
-                element['fields']['timestamp'] = time.time()
+                element['fields']['datetime'] = datetime.datetime.utcnow()
                 element['fields']['aggregationid'] = 59000000 + element['fields']['libelle']  # 59000000 for Lille
                 stations.append(element['fields'])
 
@@ -49,6 +49,8 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
 
             stations.append(new_el)
 
+    # NOT USED
+    """
     if "paris" in cities:
         url = "https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&q=&rows=1500"
         response = requests.request("GET", url)
@@ -59,7 +61,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
         for element in records:
 
             if live_data:
-                element['fields']['timestamp'] = time.time()
+                element['fields']['datetime'] = datetime.datetime.utcnow()
                 element['fields']['aggregationid'] = 75000000 + int(element['fields']['stationcode'])  # 75000000 for Lille
                 stations.append(element['fields'])
                 continue
@@ -85,7 +87,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
         for element in records:
 
             if live_data:
-                element['timestamp'] = time.time()
+                element['datetime'] = datetime.datetime.utcnow()
                 element['aggregationid'] = 69000000 + element['number']  # 69000000 for Lyon
                 stations.append(element)
                 continue
@@ -118,7 +120,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
         for element in records:
 
             if live_data:
-                element['fields']['timestamp'] = time.time()
+                element['fields']['datetime'] = datetime.datetime.utcnow()  # Single field we can relate to
                 element['fields']['aggregationid'] = 35000000 + element['fields']['objectid']  # 35000000 for Rennes
                 stations.append(element['fields'])
                 continue
@@ -133,6 +135,7 @@ def get_stations(cities=["lille", "paris", "lyon", "rennes"], live_data=False):
             }
 
             stations.append(new_el)
+    """
 
     return stations
 

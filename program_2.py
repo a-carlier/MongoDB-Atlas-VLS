@@ -54,6 +54,7 @@ if __name__ == "__main__":
     # refresh("rennes")
 
     while True and worker:
+        print("Waiting " + str(refresh_seconds) + " seconds before next refresh...")
         time.sleep(refresh_seconds)
         refresh("lille")
         # refresh("paris")
