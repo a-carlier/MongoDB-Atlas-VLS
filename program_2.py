@@ -6,6 +6,15 @@ import database_info as dbi
 worker = True  # Activate to make a worker out of the program
 refresh_seconds = 60 * 2  # Refreshing Time in seconds
 
+"""
+Worker who refresh and store live data for a city (history data)
+
+We also use init_static_stations on start to make sure they are in the database and update them with live information
+stations will be our Database with stations
+history will be our Database with history
+
+They can be aggregated with their aggregationid
+"""
 
 def init_static_stations(city):
     print("Init VLS Stations from " + city + " ...")

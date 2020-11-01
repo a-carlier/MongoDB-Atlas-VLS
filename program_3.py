@@ -1,7 +1,16 @@
 import pymongo
 import database_info as dbi
 
-# WE HAVE TO MAKE SURE THAT GEOLOCATION IS A 2D INDEX
+# WE HAVE TO MAKE SURE THAT GEOLOCALISATION IS A 2D INDEX
+
+"""
+User program: give available stations name next to the user lat, lon with last data (bikes and stand)
+
+x is the longitude 
+y is the latitude
+
+distance is the distance in meters from this location where we need to search
+"""
 
 def get_near_stations(x, y, distance):  # Distance in meters
     client = pymongo.MongoClient(

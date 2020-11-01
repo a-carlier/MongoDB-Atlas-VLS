@@ -1,6 +1,13 @@
 import pymongo
 import database_info as dbi
 
+"""
+PROGRAM OBJECTIVE:
+4 -  deactivate all station in an area
+
+Given points, forming a polygon, we deactivate station in this area (available become "type" (By default False))
+"""
+
 def deactivate_area(points, type=False):
     if len(points) < 3:
         print("You need to give more points to deactivate an area")

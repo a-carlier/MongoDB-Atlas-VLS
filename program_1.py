@@ -3,15 +3,15 @@ import json
 import datetime
 
 """
-Objectif: Récuperer les donnees suivantes des APIS de Velib de Lille, Paris, Lyon et Rennes
-- geolocation
+Objectives: Get self-services Bicycle Stations from Lille, Paris, Lyon et Rennes
+- geolocalisation
 - name
 - capacity
 - tpe
 - available
 
-Nous retransformons les fichiers pour obtenir des resultats coherents avec les memes types
-de valeurs et memes cles
+We transform every format to look the same in our database,
+For later tests, we will only use Lille Data
 
 """
 

@@ -2,11 +2,17 @@ import re  # REGEX
 import pymongo
 import database_info as dbi
 
+"""
 # PROGRAM OBJECTIVES:
-# - find station with name (with some letters)
-#   * Find a station with a word(s) case insensitive
-# - update a station
-# - delete a station
+1 - find station with name (with some letters)
+  * Find a station with a word(s) case insensitive
+2 - update a station
+3 - delete a station
+"""
+
+"""
+We search stations containing "name"
+"""
 
 def find_station_name(name):
     # STATION REGEX FINDING
@@ -26,6 +32,9 @@ def find_station_name(name):
         results.append(res)
     return results
 
+"""
+Interface prompting to user which values He want to change
+"""
 
 def value_update(stationu):
     # UPDATING INTERFACE (Not sending to database)
@@ -116,6 +125,9 @@ def value_update(stationu):
 
     return stationu
 
+"""
+Prompt to user which station he want to choose from a generated id
+"""
 
 def which_station(results):
     # INTERFACE CHOOSING STATION AND UPDATING OR DELETING THIS STATION
@@ -176,6 +188,9 @@ def which_station(results):
                 break
             # Else, continue...
 
+"""
+Delete a station given its station (More importantly, its aggregationid, for which we are sure is unique
+"""
 
 def delete_station(station):
     # DELETE STATION FROM DATABASE AND HISTORY

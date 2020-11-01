@@ -4,16 +4,14 @@ import time
 import re
 
 # For this part, we only use data from Lille, so our history will have only one format
-regex = re.compile("[0-9]{2}:([0-9]{2}):[0-9]{2}")
-def is_time_correct(timest, h1, h2):
-    val = time.gmtime(timest)
-    if val.tm_wday > 4: # 0 to 4 are Monday to Friday
-        return False
 
-    if val.tm_hour > h1 and val.tm_hour < h2:
-        return True
-    return False
+"""
+PROGRAM OBJECTIVE:
+5 -  give all stations with a ratio bike/total_stand under 20% between 18h and 19h00 (monday to friday)
 
+We can choose between which hours we want to check and which ratio (By default, between 18h and 19h with a 20% ratio)
+But it will always look for days between Monday and Friday, whiwh could be easily handled
+"""
 
 def get_stations_below_ratio(hour1 = 18, hour2 = 19, ratio=0.2):
     client = pymongo.MongoClient(
@@ -25,24 +23,30 @@ def get_stations_below_ratio(hour1 = 18, hour2 = 19, ratio=0.2):
     s_list = db.stations.aggregate([
         {
             '$lookup': {
+                # We take our history
                 'from': 'history',
+                # We create temporary variable so we can join our tables later
                 'let': {
                     "agg_id": "$aggregationid",  # FIELD WE CREATED IN PROGRAM 2
                     "total_velos": "$size"
                 },
+                # Pipeline to use only useful data
                 'pipeline': [
                     {
                         '$match': {  # Jointure
                             '$expr': {'$eq': ['$aggregationid', '$$agg_id']}  # Joint stations with history
                         }
-                    }, {  # Calculate ratio, day of week and hour
+                    }, {  # Calculate ratio, day of week and hour from ISODate
                         '$project': {
+                            # Calculate day
                             'week_day': {
                                 '$dayOfWeek': '$datetime'
                             },
+                            # Calculate Hour
                             'hour': {
                                 '$hour': '$datetime'
                             },
+                            # Calculate Ratio
                             'ratio': {
                                 '$cond': {
                                     'if': {'$eq': [{'$sum': ['$nbvelosdispo', '$nbplacesdispo']}, 0]},  # Some stations have a size of 0, still low ratio but we dont want to divide by 0
@@ -73,7 +77,7 @@ def get_stations_below_ratio(hour1 = 18, hour2 = 19, ratio=0.2):
             }
         }, {
             '$project': {
-                'history': 0  # Delete history from result
+                'history': 0  # Delete history from result so we have a clean output
             }
         }
     ])
